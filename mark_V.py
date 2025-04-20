@@ -1,4 +1,7 @@
 import rdkit as rd
+from rdkit import Chem
+from rdkit.Chem import Descriptors
+from rdkit.Chem import MoleculeDescriptors
 import pandas as pd
 import numpy as np
 import matplotlib as plt
@@ -25,3 +28,16 @@ molecules = {
     "Triclopyr": "C1=CC(=C(C=C1Cl)Cl)C(=O)O",
     "Veltin": "CC1=CC(=O)NC(=O)N1C2=CC=CC=C2"
 }
+
+descriptorNames =  [desc[0] for desc in Descriptors._descList]
+calculator = MoleculeDescriptors.MolecularDescriptorCalculator(descriptorNames)
+
+def Descriptors():
+    pass
+
+
+
+
+
+
+
