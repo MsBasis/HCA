@@ -4,7 +4,8 @@ from rdkit.Chem import Descriptors
 from rdkit.ML.Descriptors import MoleculeDescriptors
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
+
 
 molecules = {
     "Mocap": "CCOP(=S)(OCC)SCC",
@@ -47,9 +48,26 @@ def Descriptors(mols):
 
 desc_df = Descriptors(molecules)
 #print(desc_df.head())
-desc_df.to_csv("Uni_Shits/HCA/descriptors",index=False)
+#desc_df.to_csv("Uni_Shits/HCA/descriptors",index=False)
 
+def clean_and_scale(df):
+    df_cleaned = df.copy()
+    if "Compound" in df_cleaned.columns:
+        compound_names = df_cleaned["Compound"]
+        df_cleaned = df_cleaned.drop(columns=["Compound"])
+    else:
+        compound_names = pd.Series([f"Mol_{i}" for i in range(len(df_cleaned))])
+    df_cleaned = df_cleaned.loc[:, df_cleaned.nunique() > 1]
+    df_cleaned = df_cleaned.dropna(axis=1)
+    mean = df_cleaned.mean()
+    std = df_cleaned.std(ddof=0)
+    X_scaled = (df_cleaned - mean) / std
+    scaled_df = X_scaled.copy()
+    scaled_df.insert(0, "Compound", compound_names.values)
 
+    return scaled_df, X_scaled.to_numpy(), compound_names
+
+scaled_df, X_scaled, compound_names = clean_and_scale(desc_df)
 
 
 
