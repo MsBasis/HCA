@@ -92,41 +92,36 @@ def HCA(mo, max_min):
     ID_Klastry = list(range(n))
     dis = mo.to_numpy().copy()
     np.fill_diagonal(dis, np.inf)
-
-    links = []
-    next_cluster_id = n
+    connections = []
+    nextClusterID = n
 
     while len(klastry) > 1:
         best = np.inf
         pair = None
-
         for i in range(len(klastry)):
             for j in range(i + 1, len(klastry)):
                 d = max_min(klastry[i], klastry[j], dis)
                 if d < best:
                     best = d
                     pair = (i, j)
-
         i, j = pair
         new_cluster = klastry[i] + klastry[j]
-        links.append([ID_Klastry[i], ID_Klastry[j], best, len(new_cluster)])
-
+        connections.append([ID_Klastry[i], ID_Klastry[j], best, len(new_cluster)])
         for k in sorted([i, j], reverse=True):
             del klastry[k]
             del ID_Klastry[k]
-
         klastry.append(new_cluster)
-        ID_Klastry.append(next_cluster_id)
-        next_cluster_id += 1
+        ID_Klastry.append(nextClusterID)
+        nextClusterID += 1
 
-    return np.array(links)
+    return np.array(connections)
 
 
 # - - - Wizualizacja danych - - - 
 def plot_dendrogram_Complete(linkage_matrix, labels=None):
     plt.figure(figsize=(10, 6))
     dendrogram(linkage_matrix, labels=labels)
-    plt.title("Dendrogram – HCA (Complete Linkage)")
+    plt.title("Dendrogram - HCA (Complete Linkage)")
     plt.xlabel("Związki")
     plt.ylabel("Odległość")
     plt.show()
@@ -134,7 +129,7 @@ def plot_dendrogram_Complete(linkage_matrix, labels=None):
 def plot_dendrogram_Single(linkage_matrix, labels=None):
     plt.figure(figsize=(10, 6))
     dendrogram(linkage_matrix, labels=labels)
-    plt.title("Dendrogram – HCA (Single Linkage)")
+    plt.title("Dendrogram – HCA (Single Linkage)") 
     plt.xlabel("Związki")
     plt.ylabel("Odległość")
     plt.show()
