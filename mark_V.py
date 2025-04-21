@@ -5,7 +5,7 @@ from rdkit.ML.Descriptors import MoleculeDescriptors
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+from scipy.cluster.hierarchy import dendrogram
 
 molecules = {
     "Mocap": "CCOP(=S)(OCC)SCC",
@@ -86,4 +86,63 @@ def maxDist(c1, c2, mo): #funkcja potrzebna do liczenia complete linkage
 def minDist(c1, c2, mo): #funkcja potrzebna do liczenia single linkage
     return np.min([mo[i][j] for i in c1 for j in c2])
 
+def HCA(mo, max_min):
+    n = mo.shape[0]
+    klastry = [[i] for i in range(n)]
+    ID_Klastry = list(range(n))
+    dis = mo.to_numpy().copy()
+    np.fill_diagonal(dis, np.inf)
 
+    links = []
+    next_cluster_id = n
+
+    while len(klastry) > 1:
+        best = np.inf
+        pair = None
+
+        for i in range(len(klastry)):
+            for j in range(i + 1, len(klastry)):
+                d = max_min(klastry[i], klastry[j], dis)
+                if d < best:
+                    best = d
+                    pair = (i, j)
+
+        i, j = pair
+        new_cluster = klastry[i] + klastry[j]
+        links.append([ID_Klastry[i], ID_Klastry[j], best, len(new_cluster)])
+
+        for k in sorted([i, j], reverse=True):
+            del klastry[k]
+            del ID_Klastry[k]
+
+        klastry.append(new_cluster)
+        ID_Klastry.append(next_cluster_id)
+        next_cluster_id += 1
+
+    return np.array(links)
+
+
+
+def plot_dendrogram_Complete(linkage_matrix, labels=None):
+    plt.figure(figsize=(10, 6))
+    dendrogram(linkage_matrix, labels=labels)
+    plt.title("Dendrogram – HCA (Complete Linkage)")
+    plt.xlabel("Związki")
+    plt.ylabel("Odległość")
+    plt.show()
+    
+def plot_dendrogram_Single(linkage_matrix, labels=None):
+    plt.figure(figsize=(10, 6))
+    dendrogram(linkage_matrix, labels=labels)
+    plt.title("Dendrogram – HCA (Single Linkage)")
+    plt.xlabel("Związki")
+    plt.ylabel("Odległość")
+    plt.show()
+
+mo = euklidesowa(X_scaled)
+
+linkageComplete = HCA(mo,maxDist)
+linkageSingle = HCA(mo,minDist)
+
+plot_dendrogram_Complete(linkageComplete, labels=[str(i+1) for i in range(len(compound_names))])
+plot_dendrogram_Single(linkageSingle,labels=[str(i+1) for i in range(len(compound_names))])
