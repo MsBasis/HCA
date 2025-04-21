@@ -1,7 +1,7 @@
 import rdkit as rd
 from rdkit import Chem
 from rdkit.Chem import Descriptors
-from rdkit.Chem import MoleculeDescriptors
+from rdkit.ML.Descriptors import MoleculeDescriptors
 import pandas as pd
 import numpy as np
 import matplotlib as plt
@@ -28,13 +28,26 @@ molecules = {
     "Triclopyr": "C1=CC(=C(C=C1Cl)Cl)C(=O)O",
     "Veltin": "CC1=CC(=O)NC(=O)N1C2=CC=CC=C2"
 }
-
+# - - - przygotowanie danych - - - 
 descriptorNames =  [desc[0] for desc in Descriptors._descList]
 calculator = MoleculeDescriptors.MolecularDescriptorCalculator(descriptorNames)
 
-def Descriptors():
-    pass
+def Descriptors(mols):
+    results = []
+    for name, smi in mols.items():
+        mol = Chem.MolFromSmiles(smi)
+        if mol is None:
+            print("Error")
+            desc = [None] * len(descriptorNames)
+        else:
+            desc = calculator.CalcDescriptors(mol)
+        results.append([name]+list(desc))
+    df = pd.DataFrame(results, columns=["Compound"]+descriptorNames)
+    return df
 
+desc_df = Descriptors(molecules)
+#print(desc_df.head())
+desc_df.to_csv("Uni_Shits/HCA/descriptors",index=False)
 
 
 
