@@ -69,6 +69,21 @@ def clean_and_scale(df):
 
 scaled_df, X_scaled, compound_names = clean_and_scale(desc_df)
 
+# - - - obliczanie danych - - - 
+def euklidesowa(m):
+    n = m.shape[0]
+    result = np.zeros((n, n))
+    for i in range(n):
+        for j in range(i+1, n):
+            dist = np.sqrt(np.sum((m[i] - m[j]) ** 2))
+            result[i, j] = dist
+            result[j, i] = dist
+    return pd.DataFrame(result)
 
+def maxDist(c1, c2, mo): #funkcja potrzebna do liczenia complete linkage
+    return np.max([mo[i][j] for i in c1 for j in c2])
+
+def minDist(c1, c2, mo): #funkcja potrzebna do liczenia single linkage
+    return np.min([mo[i][j] for i in c1 for j in c2])
 
 
