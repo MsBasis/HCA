@@ -122,7 +122,7 @@ def HCA(mo, max_min):
     return np.array(links)
 
 
-
+# - - - Wizualizacja danych - - - 
 def plot_dendrogram_Complete(linkage_matrix, labels=None):
     plt.figure(figsize=(10, 6))
     dendrogram(linkage_matrix, labels=labels)
