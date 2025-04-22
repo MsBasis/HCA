@@ -1,4 +1,3 @@
-# HCA
 # Report: Molecular Descriptor Analysis and HCA using RDKit
 
 ## ✨ Project Goal
